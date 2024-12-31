@@ -8,6 +8,8 @@
 
 FlexyStepper stepper;
 CommandData command_data;
+
+std::unique_ptr<State> test = std::make_unique<Init>(stepper);
 StateController state_controller(std::make_unique<Init>(stepper));
 
 Button override_open_button(OVERRIDE_OPEN_PIN);

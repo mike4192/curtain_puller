@@ -16,7 +16,7 @@ bool Init::tick(const CommandData& command_data) {
         digitalWrite(RED_LED, LOW);
         digitalWrite(YELLOW_LED, LOW);
         digitalWrite(BLUE_LED, LOW);
-        next_state = std::make_unique<SelfCalibrate>();
+        next_state = std::make_unique<SelfCalibrate>(stepper_);
         return true;
     }
     return false;
@@ -29,11 +29,11 @@ void SelfCalibrate::init() {
 
 bool SelfCalibrate::tick(const CommandData& command_data) {
     if (command_data.override_open) {
-        next_state = std::make_unique<OverrideOpen>();
+        next_state = std::make_unique<OverrideOpen>(stepper_);
         digitalWrite(YELLOW_LED, LOW);
         return true;
     } else if (command_data.override_close) {
-        next_state = std::make_unique<OverrideClose>();
+        next_state = std::make_unique<OverrideClose>(stepper_);
         digitalWrite(YELLOW_LED, LOW);
         return true;
     }
@@ -62,8 +62,8 @@ bool OverrideOpen::tick(const CommandData& command_data) {
 
 
     if (command_data.override_close || command_data.automatic) {
-        if (command_data.override_close) {next_state = std::make_unique<OverrideClose>();}
-        else if (command_data.automatic) {next_state = std::make_unique<Automatic>();}
+        if (command_data.override_close) {next_state = std::make_unique<OverrideClose>(stepper_);}
+        else if (command_data.automatic) {next_state = std::make_unique<Automatic>(stepper_);}
         digitalWrite(GREEN_LED, LOW);
         digitalWrite(YELLOW_LED, LOW);
         return true;
@@ -78,8 +78,8 @@ void OverrideClose::init() {
 
 bool OverrideClose::tick(const CommandData& command_data) {
     if (command_data.override_open || command_data.automatic) {
-        if (command_data.override_open) {next_state = std::make_unique<OverrideOpen>();}
-        else if (command_data.automatic) {next_state = std::make_unique<Automatic>();}
+        if (command_data.override_open) {next_state = std::make_unique<OverrideOpen>(stepper_);}
+        else if (command_data.automatic) {next_state = std::make_unique<Automatic>(stepper_);}
         digitalWrite(RED_LED, LOW);
         return true;
     }
@@ -100,8 +100,8 @@ bool Automatic::tick(const CommandData& command_data) {
         digitalWrite(RED_LED, HIGH);
     }
     if (command_data.override_open || command_data.override_close) {
-        if (command_data.override_open) {next_state = std::make_unique<OverrideOpen>();}
-        else if (command_data.override_close) {next_state = std::make_unique<OverrideClose>();}
+        if (command_data.override_open) {next_state = std::make_unique<OverrideOpen>(stepper_);}
+        else if (command_data.override_close) {next_state = std::make_unique<OverrideClose>(stepper_);}
         digitalWrite(BLUE_LED, LOW);
         digitalWrite(GREEN_LED, LOW);
         digitalWrite(RED_LED, LOW);

@@ -9,9 +9,8 @@
 
 class State {
  public:
-  virtual void init() { /* Do Nothing */ };
-
-  void setStepper(FlexyStepper& stepper) { stepper_ = stepper; }
+  State(FlexyStepper& stepper) : stepper_(stepper) {}
+  virtual void init() {};
 
   // If tick returns true, it is a signal that the state should be changed and
   // next_state is ready to be used as the next state
@@ -21,15 +20,12 @@ class State {
   std::unique_ptr<State> next_state = nullptr;
 
  protected:
-  static FlexyStepper& stepper_;
+  FlexyStepper& stepper_;
 };
 
 class Init : public State {
  public:
-  // The init state constructor sets the static stepper object inherent to
-  // to the state class
-  Init(FlexyStepper& stepper) { stepper_ = stepper; }
-
+  using State::State;
   bool tick(const CommandData& command_data) override;
 
  private:
@@ -38,24 +34,28 @@ class Init : public State {
 
 class SelfCalibrate : public State {
  public:
+  using State::State;
   void init() override;
   bool tick(const CommandData& command_data) override;
 };
 
 class OverrideOpen : public State {
  public:
+  using State::State;
   void init() override;
   bool tick(const CommandData& command_data) override;
 };
 
 class OverrideClose : public State {
  public:
+  using State::State;
   void init() override;
   bool tick(const CommandData& command_data) override;
 };
 
 class Automatic : public State {
  public:
+  using State::State;
   void init() override;
   bool tick(const CommandData& command_data) override;
 };

@@ -1,3 +1,6 @@
+// This file was copied from https://github.com/Stan-Reifel/FlexyStepper/tree/master
+// Original author(s): Stan-Reifel
+// Licensed under the MIT License: https://opensource.org/licenses/MIT
 
 //      ******************************************************************
 //      *                                                                *
