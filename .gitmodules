@@ -1,0 +1,3 @@
+[submodule "lib/button"]
+	path = lib/button
+	url = git@github.com:madleech/Button.git
