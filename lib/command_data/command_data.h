@@ -8,8 +8,8 @@ struct CommandData {
     volatile bool automatic = false;
     volatile bool ir_sensor_1 = false;
     volatile bool ir_sensor_2 = false;
-    volatile bool left_limit_switch = false;
-    volatile bool right_limit_switch = false;
+    volatile bool open_limit_switch = false;
+    volatile bool close_limit_switch = false;
 
     void setOverrideOpen() {
         override_open = true;

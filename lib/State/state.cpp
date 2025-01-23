@@ -44,46 +44,90 @@ void OverrideOpen::init() {
     Serial.println("In override open init");
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(YELLOW_LED, HIGH); // Yellow LED to indicate movement 
-    // Set target open position. This should intentionally overshoot the expected
-    // position to account for possible missed steps or variability in movement/position
-    stepper_.setTargetPositionInSteps(1000); 
-    // TODO: Set speed faster
+    // Set target open position.
+    stepper_.setTargetPositionInSteps(open_overshoot_pos_);
+    stepper_.setSpeedInStepsPerSecond(FAST_SPEED);
+    // Set sleep pin to HIGH to enable driver and wait at least 1 ms
+    digitalWrite(SLEEP_PIN, HIGH);
+    delay(5); // 5 ms
 }
 
 bool OverrideOpen::tick(const CommandData& command_data) {
 
-    // if (!stepper_.motionComplete()) {
-    //     stepper_.processMovement();
-    //     // If stepper hits limit switch, stop motor
-    //     // If stepper passes some threshold, slow it down
-    //     // Stop stepper after some sanity point if limit switch not hit
-    //     How to stop motor: stepper.setTargetPositionToStop(); 
-    // }
+    if (!stepper_.motionComplete()) {
+        // When stepper passes threshold, slow it down
+        if (stepper_.getCurrentPositionInSteps() > open_slowdown_pos_) {
+            stepper_.setSpeedInStepsPerSecond(SLOW_SPEED);
+        }
 
+        // If stepper hits limit switch, stop motor
+        // (still subject to acceleration)
+        if (command_data.open_limit_switch) {
+            stepper_.setTargetPositionToStop();
+        }
+
+        stepper_.processMovement();
+    } else {
+        // Set driver board to sleep
+        digitalWrite(SLEEP_PIN, LOW);
+        digitalWrite(YELLOW_LED, LOW);
+    }
 
     if (command_data.override_close || command_data.automatic) {
-        if (command_data.override_close) {next_state = std::make_unique<OverrideClose>(stepper_);}
-        else if (command_data.automatic) {next_state = std::make_unique<Automatic>(stepper_);}
-        digitalWrite(GREEN_LED, LOW);
-        digitalWrite(YELLOW_LED, LOW);
-        return true;
+      if (command_data.override_close) {
+        next_state = std::make_unique<OverrideClose>(stepper_);
+      } else if (command_data.automatic) {
+        next_state = std::make_unique<Automatic>(stepper_);
+      }
+      digitalWrite(GREEN_LED, LOW);
+      digitalWrite(YELLOW_LED, LOW);
+      return true;
     }
-    return false;   
+    return false;
 }
 
 void OverrideClose::init() {
     Serial.println("In override close init");
     digitalWrite(RED_LED, HIGH);
+    digitalWrite(YELLOW_LED, HIGH); // Yellow LED to indicate movement 
+    // Set target open position.
+    stepper_.setTargetPositionInSteps(close_overshoot_pos_);
+    stepper_.setSpeedInStepsPerSecond(FAST_SPEED);
+    // Set sleep pin to HIGH to enable driver and wait at least 1 ms
+    digitalWrite(SLEEP_PIN, HIGH);
+    delay(5); // 5 ms
 }
 
 bool OverrideClose::tick(const CommandData& command_data) {
-    if (command_data.override_open || command_data.automatic) {
-        if (command_data.override_open) {next_state = std::make_unique<OverrideOpen>(stepper_);}
-        else if (command_data.automatic) {next_state = std::make_unique<Automatic>(stepper_);}
-        digitalWrite(RED_LED, LOW);
-        return true;
+if (!stepper_.motionComplete()) {
+        // When stepper passes threshold, slow it down
+        if (stepper_.getCurrentPositionInSteps() < close_slowdown_pos_) {
+            stepper_.setSpeedInStepsPerSecond(SLOW_SPEED);
+        }
+
+        // If stepper hits limit switch, stop motor
+        // (still subject to acceleration)
+        if (command_data.close_limit_switch) {
+            stepper_.setTargetPositionToStop();
+        }
+
+        stepper_.processMovement();
+    } else {
+        // Set driver board to sleep
+        digitalWrite(SLEEP_PIN, LOW);
+        digitalWrite(YELLOW_LED, LOW);
     }
-    return false;   
+
+  if (command_data.override_open || command_data.automatic) {
+    if (command_data.override_open) {
+      next_state = std::make_unique<OverrideOpen>(stepper_);
+    } else if (command_data.automatic) {
+      next_state = std::make_unique<Automatic>(stepper_);
+    }
+    digitalWrite(RED_LED, LOW);
+    return true;
+  }
+  return false;
 }
 
 void Automatic::init() {

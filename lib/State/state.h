@@ -21,6 +21,16 @@ class State {
 
  protected:
   FlexyStepper& stepper_;
+
+  // Measured open position
+  long open_pos_ = 2100L; 
+  long open_slowdown_pos_ = 1700L;
+  // Position to command when opening, intentionally
+  // overshooting known open position
+  long open_overshoot_pos_ = 2200L;
+  long close_pos_ = 0L;
+  long close_overshoot_pos_ = -100L;
+  long close_slowdown_pos_ = 300L;
 };
 
 class Init : public State {

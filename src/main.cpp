@@ -54,8 +54,14 @@ void setup() {
   pinMode(YELLOW_LED, OUTPUT);
   pinMode(BLUE_LED, OUTPUT);
 
+  // Other setup
+  pinMode(RESET_PIN, OUTPUT);
+  digitalWrite(RESET_PIN, HIGH);
+  pinMode(SLEEP_PIN, OUTPUT);
+  digitalWrite(SLEEP_PIN, LOW); // LOW: disabled, HIGH: enabled
+
   stepper.connectToPins(STEPPER_PIN, DIR_PIN);
-  stepper.setSpeedInStepsPerSecond(SPEED);
+  stepper.setSpeedInStepsPerSecond(FAST_SPEED);
   stepper.setAccelerationInStepsPerSecondPerSecond(ACCEL);
 }
 
