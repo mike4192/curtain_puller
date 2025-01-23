@@ -2,14 +2,11 @@
 #include "Button.h"
 #include "command_data.h"
 #include "constants.h"
-#include "FlexyStepper.h"
-#include "state.h"
-#include "state_controller.h"
 
-FlexyStepper stepper;
+uint32_t prev_yellow_led_time = 0;
+uint32_t prev_blue_led_time = 0;
+
 CommandData command_data;
-
-StateController state_controller(std::make_unique<Init>(stepper));
 
 Button override_open_button(OVERRIDE_OPEN_BUTTON_PIN);
 Button override_close_button(OVERRIDE_CLOSE_BUTTON_PIN);
@@ -64,18 +61,58 @@ void setup() {
   digitalWrite(RESET_PIN, HIGH);
   pinMode(SLEEP_PIN, OUTPUT);
   digitalWrite(SLEEP_PIN, LOW); // LOW: disabled, HIGH: enabled
-
-  stepper.connectToPins(STEPPER_PIN, DIR_PIN);
-  stepper.setSpeedInStepsPerSecond(FAST_SPEED);
-  stepper.setAccelerationInStepsPerSecondPerSecond(ACCEL);
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
   pollInputs();
 
-  state_controller.tick(command_data);
+  if (command_data.override_close) {
+     if (millis() - prev_blue_led_time > 250) {
+      prev_blue_led_time = millis();
+      digitalWrite(BLUE_LED, !digitalRead(BLUE_LED));
+    }
+  } else if (command_data.override_open) {
+     if (millis() - prev_blue_led_time > 100) {
+      prev_blue_led_time = millis();
+      digitalWrite(BLUE_LED, !digitalRead(BLUE_LED));
+    }
+  } else if (command_data.automatic) {
+     if (millis() - prev_blue_led_time > 1000) {
+      prev_blue_led_time = millis();
+      digitalWrite(BLUE_LED, !digitalRead(BLUE_LED));
+    }
+  }
 
-  command_data.clearButtonStates();
+  // If the on box or off box limit switch is pressed, blink the LED
+  // at either 1 Hz to 4 Hz
+  if (!command_data.on_box_limit_switch) {
+    if (millis() - prev_yellow_led_time > 250) {
+      prev_yellow_led_time = millis();
+      digitalWrite(YELLOW_LED, !digitalRead(YELLOW_LED));
+    }
+  } else if (!command_data.off_box_limit_switch) {
+    if (millis() - prev_yellow_led_time > 1000) {
+      prev_yellow_led_time = millis();
+      digitalWrite(YELLOW_LED, !digitalRead(YELLOW_LED));
+    }
+  } else {
+    digitalWrite(YELLOW_LED, LOW);
+  }
+
+
+  if (command_data.ir_sensor_short_wire) {
+    digitalWrite(RED_LED, HIGH);
+  } else {
+    digitalWrite(RED_LED, LOW);
+  }
+  if (command_data.ir_sensor_long_wire) {
+    digitalWrite(GREEN_LED, HIGH);
+  } else {
+    digitalWrite(GREEN_LED, LOW);
+  }
+
+
+  // command_data.clearButtonStates();
 }
 

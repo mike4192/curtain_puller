@@ -107,7 +107,7 @@ if (!stepper_.motionComplete()) {
 
         // If stepper hits limit switch, stop motor
         // (still subject to acceleration)
-        if (command_data.close_limit_switch) {
+        if (command_data.on_box_limit_switch) {
             stepper_.setTargetPositionToStop();
         }
 
@@ -136,7 +136,7 @@ void Automatic::init() {
 }
 
 bool Automatic::tick(const CommandData& command_data) {
-    if (command_data.ir_sensor_1) {
+    if (command_data.ir_sensor_short_wire) {
         digitalWrite(GREEN_LED, HIGH);
         digitalWrite(RED_LED, LOW);
     } else {

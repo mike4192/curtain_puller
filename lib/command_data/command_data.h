@@ -3,13 +3,15 @@
 // #include "constants.h"
 
 struct CommandData {
-    volatile bool override_open = false;
-    volatile bool override_close = false;
-    volatile bool automatic = false;
-    volatile bool ir_sensor_1 = false;
-    volatile bool ir_sensor_2 = false;
-    volatile bool open_limit_switch = false;
-    volatile bool close_limit_switch = false;
+    bool override_open = false;
+    bool override_close = false;
+    bool automatic = false;
+    bool ir_sensor_short_wire = false;
+    bool ir_sensor_long_wire = false;
+    bool open_limit_switch = false;
+    bool on_box_limit_switch = false;
+    bool off_box_limit_switch = false;
+
 
     void setOverrideOpen() {
         override_open = true;
