@@ -71,5 +71,6 @@
         "typeinfo": "cpp",
         "variant": "cpp"
     },
-    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, TabWidth: 2, ColumnLimit: 120}"
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, TabWidth: 2, ColumnLimit: 100}",
+    "editor.detectIndentation": false
 }

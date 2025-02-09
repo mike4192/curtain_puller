@@ -14,22 +14,19 @@ struct CommandData {
 
 
     void setOverrideOpen() {
+        clearButtonStates();
         override_open = true;
-        override_close = false;
-        automatic = false;
     }
 
     void setOverrideClose() {
+        clearButtonStates();
         override_close = true;
-        override_open = false;
-        automatic = false;
     }
 
     void setAutomaticOrDisable() {
+        clearButtonStates();
         // Automatic and disable button serves double duty.
         automatic = true;
-        override_open = false;
-        override_close = false;
     }
 
     void clearButtonStates() {
