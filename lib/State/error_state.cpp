@@ -2,8 +2,10 @@
 
 #include "constants.h"
 #include "self_calibrate_state.h"
+#include "utils.h"
 
 void Error::init() {
+  logIfEnabled("In Error state's init()");
   // Ensure stepper is stopped, set driver to sleep mode
   stepper_->setTargetPositionToStop();
   digitalWrite(SLEEP_PIN, LOW);
@@ -17,6 +19,7 @@ bool Error::tick(const CommandData& command_data) {
   }
 
   if (command_data.automatic) {
+    logIfEnabled("Transitioning to self calibrate state from Error");
     digitalWrite(RED_LED, LOW);
     next_state = std::make_unique<SelfCalibrate>();
     return true;

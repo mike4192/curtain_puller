@@ -23,7 +23,9 @@ class State {
   static FlexyStepper* stepper_;
 
   // Measured open position
-  long open_pos_ = 2100L;
+  long on_box_limit_switch_pos_ = 0L; // TODO: Change name to open or close
+  long off_box_limit_switch_pos_ = 0L; // TODO: Change name to open or close
+  
   long open_slowdown_pos_ = 1700L;
 
   long open_overshoot_pos_ = 2200L;

@@ -53,7 +53,9 @@ void pollInputs() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  if (LOGGING_ENABLED) {
+    Serial.begin(9600);
+  }
 
   stepper.connectToPins(STEPPER_PIN, DIR_PIN);
 

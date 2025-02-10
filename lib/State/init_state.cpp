@@ -2,8 +2,10 @@
 
 #include "constants.h"
 #include "self_calibrate_state.h"
+#include "utils.h"
 
 void Init::init() {
+  logIfEnabled("In Init state's init()");
   // Ensure stepper is stopped, set driver to sleep mode
   stepper_->setTargetPositionToStop();
   digitalWrite(SLEEP_PIN, LOW);
@@ -21,6 +23,7 @@ bool Init::tick(const CommandData& command_data) {
   }
 
   if (command_data.automatic) {
+    logIfEnabled("Transitioning to self calibrate state");
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, LOW);
     digitalWrite(YELLOW_LED, LOW);

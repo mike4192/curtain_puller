@@ -18,7 +18,7 @@
 #define RESET_PIN 6
 #define MS1_HALF_STEP_PIN 2
 #define PIR_SENSOR_TIME_PERSISTENCE_MS 10000
-#define DEBOUNC_TIME_MS 25
+#define DEBOUNCE_TIME_MS 25
 
 #define FAST_SPEED 2000 // steps/second
 #define SLOW_SPEED 400 // steps/decond
@@ -27,3 +27,5 @@
 #define HOMING_MAX_DISTANCE 20000 // steps
 #define HOMING_SPEED 500 // steps/second
 #define INITIAL_HOMING_DIR 1
+
+#define LOGGING_ENABLED true
