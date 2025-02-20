@@ -11,15 +11,12 @@
 
 #include "command_data.h"
 #include "state.h"
-// #include "FlexyStepper.h"
 
 class StateController {
  public:
-  StateController(std::unique_ptr<State> initial_state)
-      : state_(std::move(initial_state)) {
-    state_->init();
-  }
-  
+  // Use default constructor  
+  void initialize(std::unique_ptr<State> initial_state);
+
   void tick(const CommandData& command_data);
 
  private:

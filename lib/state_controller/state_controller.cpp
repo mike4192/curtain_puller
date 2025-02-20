@@ -1,5 +1,10 @@
 #include "state_controller.h"
 
+void StateController::initialize(std::unique_ptr<State> initial_state) {
+  state_ = std::move(initial_state);
+  state_->init();
+}
+
 void StateController::tick(const CommandData& command_data) {
     if (state_->tick(command_data)) {
         if (state_->next_state == nullptr) {

@@ -21,11 +21,14 @@
 #define DEBOUNCE_TIME_MS 25
 
 #define FAST_SPEED 2000 // steps/second
-#define SLOW_SPEED 400 // steps/decond
-#define ACCEL 1600 // steps/second/second
+#define SLOW_SPEED 600 // steps/decond
+#define ACCEL 1500 // steps/second/second
+#define ESTOP_ACCEL 5000
+// TODO: Probably need a ESTOP accel value
+#define UNDERSHOOT_STEPS 300
 
 #define HOMING_MAX_DISTANCE 20000 // steps
-#define HOMING_SPEED 500 // steps/second
+#define HOMING_SPEED 600 // steps/second
 #define INITIAL_HOMING_DIR 1
 
 #define LOGGING_ENABLED true

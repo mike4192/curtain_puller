@@ -17,16 +17,21 @@ bool Automatic::tick(const CommandData& command_data) {
     digitalWrite(RED_LED, HIGH);
   }
 
-  if (command_data.override_open || command_data.override_close) {
-    if (command_data.override_open) {
-      next_state = std::make_unique<OverrideOpenClose>(true);
-    } else if (command_data.override_close) {
-      next_state = std::make_unique<OverrideOpenClose>(false);
-    }
+  // Handle Transitions
+  bool ret_val = false;
+  if (command_data.override_open) {
+    next_state = std::make_unique<OverrideOpenClose>(MotionCmd::OPEN);
+    ret_val = true;
+  } else if (command_data.override_close) {
+    next_state = std::make_unique<OverrideOpenClose>(MotionCmd::CLOSE);
+    ret_val = true;
+  }
+
+  // Turn off LED's if transitioning out of auto
+  if (ret_val){
     digitalWrite(BLUE_LED, LOW);
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, LOW);
-    return true;
   }
-  return false;
+  return ret_val;
 }

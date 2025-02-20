@@ -11,7 +11,7 @@
 FlexyStepper stepper;
 CommandData command_data;
 
-StateController state_controller(std::make_unique<Init>());
+StateController state_controller{};
 
 Button override_open_button(OVERRIDE_OPEN_BUTTON_PIN);
 Button override_close_button(OVERRIDE_CLOSE_BUTTON_PIN);
@@ -48,8 +48,8 @@ void pollInputs() {
       (millis() - long_wire_last_high_time) < PIR_SENSOR_TIME_PERSISTENCE_MS;
 
   // Check limit switches
-  command_data.on_box_limit_switch = on_box_limit_switch.read();
-  command_data.off_box_limit_switch = off_box_limit_switch.read();
+  command_data.on_box_limit_switch = !on_box_limit_switch.read();
+  command_data.off_box_limit_switch = !off_box_limit_switch.read();
 }
 
 void setup() {
@@ -61,6 +61,9 @@ void setup() {
 
   // Set the static stepper pointer in the State class
   State::setStepper(&stepper);
+
+  // Set the initial state for the state controller
+  state_controller.initialize(std::make_unique<Init>());
 
   // Setup buttons
   override_open_button.begin();

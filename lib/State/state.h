@@ -5,6 +5,10 @@
 #include "FlexyStepper.h"
 #include "command_data.h"
 
+enum class MotionState { INIT, ACCELERATE, FAST_MOTION, CREEP_MOTION, COMPLETE, ESTOP };
+
+enum class MotionCmd { OPEN, CLOSE };
+
 // Base State class definition. Constructor receives a pointer to a flexy stepper object
 class State {
  public:
@@ -20,16 +24,16 @@ class State {
   std::unique_ptr<State> next_state = nullptr;
 
  protected:
+  MotionState motion_state_{MotionState::INIT};
+
+  void process_motion_profile(MotionCmd cmd, MotionCmd prev_cmd, const CommandData cmd_data);
+  MotionState check_limit_switches(const MotionState motion_state, const CommandData cmd_data, MotionCmd cmd);
   static FlexyStepper* stepper_;
 
   // Measured open position
-  long on_box_limit_switch_pos_ = 0L; // TODO: Change name to open or close
-  long off_box_limit_switch_pos_ = 0L; // TODO: Change name to open or close
+  static long on_box_limit_switch_pos_;
+  static long off_box_limit_switch_pos_;
   
-  long open_slowdown_pos_ = 1700L;
-
-  long open_overshoot_pos_ = 2200L;
-  long close_pos_ = 0L;
-  long close_overshoot_pos_ = -100L;
-  long close_slowdown_pos_ = 300L;
+  static long open_pos_;
+  static long close_pos_;
 };

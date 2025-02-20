@@ -5,9 +5,11 @@
 #include "utils.h"
 
 void Init::init() {
-  logIfEnabled("In Init state's init()");
-  // Ensure stepper is stopped, set driver to sleep mode
+  // Ensure stepper is stopped, set driver to sleep mode, set initial 
+  // velocity and accel
   stepper_->setTargetPositionToStop();
+  stepper_->setAccelerationInStepsPerSecondPerSecond(ACCEL);
+  stepper_->setSpeedInStepsPerSecond(SLOW_SPEED);
   digitalWrite(SLEEP_PIN, LOW);
 }
 

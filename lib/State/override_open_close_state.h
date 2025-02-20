@@ -3,23 +3,19 @@
 #include "command_data.h"
 #include "state.h"
 
-// class OverrideOpen : public State {
-//  public:
-//   void init() override;
-//   bool tick(const CommandData& command_data) override;
-// };
-
-// class OverrideClose : public State {
-//  public:
-//   void init() override;
-//   bool tick(const CommandData& command_data) override;
-// };
+// enum class MotionState { INIT, ACCELERATE, FAST_MOTION, CREEP_MOTION, COMPLETE, ESTOP };
 
 class OverrideOpenClose : public State {
  public:
-  OverrideOpenClose(bool is_override_open_commanded) : is_override_open_commanded_(is_override_open_commanded) {}
+  OverrideOpenClose(MotionCmd cmd) : cmd(cmd) {}
   void init() override;
   bool tick(const CommandData& command_data) override;
  private:
-  bool is_override_open_commanded_;
+
+  // MotionState check_limit_switches(const MotionState motion_state, const CommandData cmd_data);
+  MotionCmd cmd;
+
+  bool limit_switch_hit_{false};
+
+  MotionState motion_state{MotionState::INIT};
 };
