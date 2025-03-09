@@ -16,8 +16,8 @@ void Init::init() {
 bool Init::tick(const CommandData& command_data) {
   // Do nothing in init state and just blink all LEDs for indication
   // of being in init state
-  if (millis() - led_toggle_time > 250) {
-    led_toggle_time = millis();
+  if (millis() - led_toggle_time_ms > 250) {
+    led_toggle_time_ms = millis();
     digitalWrite(GREEN_LED, !digitalRead(GREEN_LED));
     digitalWrite(RED_LED, !digitalRead(RED_LED));
     digitalWrite(YELLOW_LED, !digitalRead(YELLOW_LED));

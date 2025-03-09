@@ -8,7 +8,7 @@
 #include "utils.h"
 
 void SelfCalibrate::init() {
-  Serial.println("In calibrate state's init()");
+  logIfEnabled("In calibrate state's init()");
 
   // Yelow LED is indicative of self calibration
   digitalWrite(YELLOW_LED, HIGH);

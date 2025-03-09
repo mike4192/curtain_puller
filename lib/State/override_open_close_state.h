@@ -11,5 +11,4 @@ class OverrideOpenClose : public State {
 
  private:
   MotionCmd open_close_cmd_;
-  MotionState motion_state{MotionState::INIT};
 };

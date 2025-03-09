@@ -3,11 +3,11 @@
 #include "command_data.h"
 #include "state.h"
 
-class Init : public State {
+class Disabled : public State {
  public:
   void init() override;
   bool tick(const CommandData& command_data) override;
-
+ 
  private:
-  unsigned long led_toggle_time_ms{0UL};
+  unsigned long led_toggle_time_ms{0U};
 };
