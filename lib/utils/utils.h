@@ -1,10 +1,14 @@
 #pragma once
 
-#include "constants.h"
 #include <Arduino.h>
-#include "FlexyStepper.h"
+
 #include <string>
+
+#include "FlexyStepper.h"
+#include "constants.h"
 
 void logIfEnabled(const char* message);
 
-// void runOpenCloseMotionProfile(FlexyStepper* stepper, const long target_pos, const bool is_open_cmd);
+void disable_driver();
+
+void enable_driver();

@@ -27,13 +27,14 @@ class State {
   MotionState motion_state_{MotionState::INIT};
 
   void process_motion_profile(MotionCmd cmd, MotionCmd prev_cmd, const CommandData cmd_data);
-  MotionState check_limit_switches(const MotionState motion_state, const CommandData cmd_data, MotionCmd cmd);
+  MotionState check_limit_switches(const MotionState motion_state, const CommandData cmd_data,
+                                   MotionCmd cmd);
   static FlexyStepper* stepper_;
 
   // Measured open position
   static long on_box_limit_switch_pos_;
   static long off_box_limit_switch_pos_;
-  
+
   static long open_pos_;
   static long close_pos_;
 };

@@ -11,12 +11,6 @@ class SelfCalibrate : public State {
   bool tick(const CommandData& command_data) override;
 
  private:
- bool handle_transitions(const CommandData& command_data);
-//  bool first_homing_commanded_ = false;
-//   bool first_homing_complete_ = false;
-//   bool second_homing_commanded_ = false;
-//   bool second_homing_complete_ = false;
-//   bool recalculate_complete_ = false;
-
+  bool handle_transitions(const CommandData& command_data);
   HomingState homing_state_{HomingState::INIT};
 };

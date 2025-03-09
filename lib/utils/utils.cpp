@@ -1,8 +1,10 @@
 #include "utils.h"
 
-#include "constants.h"
 #include <Arduino.h>
+
 #include <string>
+
+#include "constants.h"
 
 void logIfEnabled(const char* message) {
   if (LOGGING_ENABLED) {
@@ -10,13 +12,6 @@ void logIfEnabled(const char* message) {
   }
 }
 
+void disable_driver() { digitalWrite(SLEEP_PIN, HIGH); }
 
-// void runOpenCloseMotionProfile(FlexyStepper* stepper, const long target_pos, const bool is_open_cmd) {
-//   // Run an opening or closing motion profile. Command the target position to
-//   // the motor, but reduce speed once speed falls below a threshold, so the last motion
-//   // portion crawls to a finish. Stop motion if limit switch is commanded
-
-  
-
-
-// }
+void enable_driver() { digitalWrite(SLEEP_PIN, LOW); }

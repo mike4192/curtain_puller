@@ -28,7 +28,7 @@ bool Automatic::tick(const CommandData& command_data) {
   }
 
   // Turn off LED's if transitioning out of auto
-  if (ret_val){
+  if (ret_val) {
     digitalWrite(BLUE_LED, LOW);
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, LOW);

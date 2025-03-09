@@ -6,9 +6,9 @@
 
 void Error::init() {
   logIfEnabled("In Error state's init()");
-  // Ensure stepper is stopped, set driver to sleep mode
+  // Ensure stepper is stopped, set driver to disabled mode
   stepper_->setTargetPositionToStop();
-  digitalWrite(SLEEP_PIN, LOW);
+  disable_driver();
 }
 
 bool Error::tick(const CommandData& command_data) {

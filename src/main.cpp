@@ -7,6 +7,7 @@
 #include "init_state.h"
 #include "state.h"
 #include "state_controller.h"
+#include "utils.h"
 
 FlexyStepper stepper;
 CommandData command_data;
@@ -52,6 +53,28 @@ void pollInputs() {
   command_data.off_box_limit_switch = !off_box_limit_switch.read();
 }
 
+void set_microstepping_mode() {
+  digitalWrite(MS1_MICROSTEP_PIN, LOW);
+  digitalWrite(MS2_MICROSTEP_PIN, LOW);
+  
+  switch (STEP_MODE) {
+    case StepMode::HALF:
+      digitalWrite(MS1_MICROSTEP_PIN, HIGH);
+      break;
+    case StepMode::QUARTER:
+      digitalWrite(MS2_MICROSTEP_PIN, HIGH);
+      break;
+    case StepMode::EIGHTH:
+      // Both MS1 and MS2 low
+      break;
+    case StepMode::SIXTEENTH:
+      digitalWrite(MS1_MICROSTEP_PIN, HIGH);
+      digitalWrite(MS2_MICROSTEP_PIN, HIGH);
+      break;
+  }
+
+}
+
 void setup() {
   if (LOGGING_ENABLED) {
     Serial.begin(9600);
@@ -87,15 +110,16 @@ void setup() {
   pinMode(BLUE_LED, OUTPUT);
 
   // Other pin setup
-  // Reset pin remains permanently high
-  pinMode(RESET_PIN, OUTPUT);
-  digitalWrite(RESET_PIN, HIGH);
-  // Note for sleep mode pin: LOW->disabled, HIGH->enabled
+  // Note for enable pin: LOW->ON, HIGH->OFF
   pinMode(SLEEP_PIN, OUTPUT);
-  digitalWrite(SLEEP_PIN, LOW);
-  // Set microstepping mode to half step
-  pinMode(MS1_HALF_STEP_PIN, OUTPUT);
-  digitalWrite(MS1_HALF_STEP_PIN, HIGH);
+  disable_driver();
+
+  // Set microstepping pins as outputs
+  pinMode(MS1_MICROSTEP_PIN, OUTPUT);
+  pinMode(MS2_MICROSTEP_PIN, OUTPUT);
+
+  // Set desired microstepping mode
+  set_microstepping_mode();
 }
 
 // Loop forever

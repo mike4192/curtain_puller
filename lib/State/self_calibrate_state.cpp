@@ -14,8 +14,8 @@ void SelfCalibrate::init() {
   digitalWrite(YELLOW_LED, HIGH);
   stepper_->setSpeedInStepsPerSecond(HOMING_SPEED);
 
-  // Set sleep pin to HIGH to enable motor driver and wait at least 1 ms
-  digitalWrite(SLEEP_PIN, HIGH);
+  // Enable motor driver and wait at least 1 ms
+  enable_driver();
   delay(5);  // 5 ms
 }
 
@@ -44,7 +44,7 @@ bool SelfCalibrate::tick(const CommandData& command_data) {
 
     case HomingState::STOP_1:
       // Wait for motion to stop, then reset accel
-      if (stepper_->motionComplete()) {
+      if (stepper_->motionComplete() || stepper_->getCurrentVelocityInStepsPerSecond() == 0) {
         stepper_->setAccelerationInStepsPerSecondPerSecond(ACCEL);
         stepper_->setTargetPositionInSteps(HOMING_MAX_DISTANCE * INITIAL_HOMING_DIR * -1);
         logIfEnabled("SCS: First homing stop complete. Second homing commanded.");
@@ -72,22 +72,29 @@ bool SelfCalibrate::tick(const CommandData& command_data) {
         stepper_->setTargetPositionInSteps(off_box_limit_switch_pos_);
         logIfEnabled("SCS: Second homing complete.");
 
-        // Set sleep pin to low to disable driver
-        digitalWrite(SLEEP_PIN, LOW);
+        disable_driver();
 
         // Recalculate on box limit switch position and then set current motor position to 0
         on_box_limit_switch_pos_ = on_box_limit_switch_pos_ - off_box_limit_switch_pos_;
         off_box_limit_switch_pos_ = 0L;
-        open_pos_ = on_box_limit_switch_pos_;
-        close_pos_ = off_box_limit_switch_pos_;
+        // open_pos_ = on_box_limit_switch_pos_;
+        // close_pos_ = off_box_limit_switch_pos_;
+
+        open_pos_ = 0L;
+        close_pos_ = -1 * on_box_limit_switch_pos_;
+        const long stepper_pos = close_pos_;
 
         // Set current stepper position to zero, and the target position to zero
         // so the stepper doesn't keep moving
-        stepper_->setCurrentPositionInSteps(0L);
-        stepper_->setTargetPositionInSteps(0L);
+        stepper_->setCurrentPositionInSteps(stepper_pos);
+        stepper_->setTargetPositionInSteps(stepper_pos);
 
         logIfEnabled(("Second homing completed. On box and off box limit switch positions: (" +
                       String(on_box_limit_switch_pos_) + ", " + String(off_box_limit_switch_pos_) +
+                      ")")
+                         .c_str());
+        logIfEnabled(("Open and close positions: (" + String(open_pos_) + ", " +
+                      String(close_pos_) +
                       "). Current stepper pos: " + String(stepper_->getCurrentPositionInSteps()))
                          .c_str());
 
@@ -99,61 +106,7 @@ bool SelfCalibrate::tick(const CommandData& command_data) {
       break;
   }
 
-  // if (!first_homing_complete_) {
-  //   if (!first_homing_commanded_) {
-  //     logIfEnabled("First homing commanded");
-  //     first_homing_commanded_ = true;
-  //     stepper_->setTargetPositionRelativeInSteps(HOMING_MAX_DISTANCE * INITIAL_HOMING_DIR);
-  //   }
-  //   if (command_data.on_box_limit_switch) {
-  //     stepper_->setTargetPositionToStop();
-  //     // Record the position
-  //     on_box_limit_switch_pos_ = stepper_->getCurrentPositionInSteps();
-  //     auto msg = "First homing completed. On box limit switch position: " +
-  //     String(on_box_limit_switch_pos_); logIfEnabled(msg.c_str()); first_homing_complete_ = true;
-  //   }
-  // } else if (!second_homing_complete_) {
-  //   if (!second_homing_commanded_) {
-  //     logIfEnabled("Second homing commanded");
-  //     second_homing_commanded_ = true;
-  //     stepper_->setTargetPositionRelativeInSteps(HOMING_MAX_DISTANCE * INITIAL_HOMING_DIR * -1);
-  //   }
-  //   if (command_data.off_box_limit_switch) {
-  //     off_box_limit_switch_pos_ = stepper_->getCurrentPositionInSteps();
-  //     auto msg2 = "Off box limit switch hit with position: " + String(off_box_limit_switch_pos_);
-  //     logIfEnabled(msg2.c_str());
-
-  //     // Command stepper to the limit switch position
-  //     stepper_->setTargetPositionInSteps(off_box_limit_switch_pos_);
-  //     second_homing_complete_ = true;
-  //     logIfEnabled("Second homing completed");
-  //   }
-  // }
-
   stepper_->processMovement();
-
-  // if (first_homing_complete_ && second_homing_complete_ && stepper_->motionComplete() &&
-  // !recalculate_complete_) {
-  //   recalculate_complete_ = true;
-
-  //   // Set sleep pin to low to disable driver
-  //   digitalWrite(SLEEP_PIN, LOW);
-
-  //   // Recalculate on box limit switch position and then set current motor position to 0
-  //   on_box_limit_switch_pos_ = on_box_limit_switch_pos_ - off_box_limit_switch_pos_;
-  //   off_box_limit_switch_pos_ = 0L;
-  //   open_pos_ = on_box_limit_switch_pos_;
-  //   close_pos_ = off_box_limit_switch_pos_;
-
-  //   // Set current stepper position to zero, and the target position to zero
-  //   // so the stepper doesn't keep moving
-  //   stepper_->setCurrentPositionInSteps(0L);
-  //   stepper_->setTargetPositionInSteps(0L);
-
-  //   auto msg3 = "Second homing completed. On box and off box limit switch positions: (" +
-  //   String(on_box_limit_switch_pos_) + ", " + String(off_box_limit_switch_pos_) + "). Current
-  //   stepper pos: " + String(stepper_->getCurrentPositionInSteps()); logIfEnabled(msg3.c_str());
-  // }
 
   return handle_transitions(command_data);
 }
