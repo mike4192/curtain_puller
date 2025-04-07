@@ -10,4 +10,6 @@ class Automatic : public State {
 
  private:
   MotionCmd prev_motion_cmd_{MotionCmd::CLOSE};
+  bool prev_ir_sense_short{false};
+  bool prev_ir_sense_long{false};
 };

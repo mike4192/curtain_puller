@@ -19,8 +19,13 @@ Button override_close_button(OVERRIDE_CLOSE_BUTTON_PIN);
 Button auto_or_disable_button(AUTO_DISABLE_BUTTON_PIN);
 Button ir_sensor_short_wire(IR_SENSOR_SHORT_WIRE_PIN);
 Button ir_sensor_long_wire(IR_SENSOR_LONG_WIRE_PIN);
-Button on_box_limit_switch(ON_BOX_LIMIT_SWITCH, DEBOUNCE_TIME_MS);
-Button off_box_limit_switch(OFF_BOX_LIMIT_SWITCH, DEBOUNCE_TIME_MS);
+const int on_box_limit_switch_pin =
+    SWAP_LIMIT_SWITCHES ? OFF_BOX_LIMIT_SWITCH : ON_BOX_LIMIT_SWITCH;
+const int off_box_limit_switch_pin =
+    SWAP_LIMIT_SWITCHES ? ON_BOX_LIMIT_SWITCH : OFF_BOX_LIMIT_SWITCH;
+
+Button on_box_limit_switch(on_box_limit_switch_pin, DEBOUNCE_TIME_MS);
+Button off_box_limit_switch(off_box_limit_switch_pin, DEBOUNCE_TIME_MS);
 
 void pollInputs() {
   if (auto_or_disable_button.pressed()) {
@@ -56,7 +61,7 @@ void pollInputs() {
 void set_microstepping_mode() {
   digitalWrite(MS1_MICROSTEP_PIN, LOW);
   digitalWrite(MS2_MICROSTEP_PIN, LOW);
-  
+
   switch (STEP_MODE) {
     case StepMode::HALF:
       digitalWrite(MS1_MICROSTEP_PIN, HIGH);
@@ -72,7 +77,6 @@ void set_microstepping_mode() {
       digitalWrite(MS2_MICROSTEP_PIN, HIGH);
       break;
   }
-
 }
 
 void setup() {

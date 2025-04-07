@@ -29,6 +29,7 @@ class State {
   void process_motion_profile(MotionCmd cmd, MotionCmd prev_cmd, const CommandData cmd_data);
   MotionState check_limit_switches(const MotionState motion_state, const CommandData cmd_data,
                                    MotionCmd cmd);
+  bool check_at_destination(const CommandData cmd_data, MotionCmd open_close_cmd);
   static FlexyStepper* stepper_;
 
   // Measured open position

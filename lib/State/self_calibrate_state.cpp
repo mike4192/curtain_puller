@@ -80,9 +80,17 @@ bool SelfCalibrate::tick(const CommandData& command_data) {
         // open_pos_ = on_box_limit_switch_pos_;
         // close_pos_ = off_box_limit_switch_pos_;
 
-        open_pos_ = 0L;
-        close_pos_ = -1 * on_box_limit_switch_pos_;
-        const long stepper_pos = close_pos_;
+        long stepper_pos{0L};
+        if (OPEN_MODE == OpenMode::LEFT_TO_RIGHT) {
+          open_pos_ = -1 * on_box_limit_switch_pos_;
+          close_pos_ = 0L;
+          stepper_pos = open_pos_;
+
+        } else {  // OPEN_MODE == OpenMode::RIGHT_TO_LEFT
+          open_pos_ = 0L;
+          close_pos_ = -1 * on_box_limit_switch_pos_;
+          stepper_pos = close_pos_;
+        }
 
         // Set current stepper position to zero, and the target position to zero
         // so the stepper doesn't keep moving

@@ -12,7 +12,7 @@ void Error::init() {
 }
 
 bool Error::tick(const CommandData& command_data) {
-  // Do nothing in init state and just blink red LED
+  // Do nothing in error state and just blink red LED
   if (millis() - led_toggle_time > 250) {
     led_toggle_time = millis();
     digitalWrite(RED_LED, !digitalRead(RED_LED));

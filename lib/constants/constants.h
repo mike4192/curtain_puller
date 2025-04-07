@@ -1,7 +1,8 @@
 #pragma once
 
-// Numbers correspond to GPIO pin numbers
-#define STEPPER_PIN 13
+// Numbers correspond to Pico GPIO pin numbers
+// NOTE GP13 pin on pico is probably dead due to accidental short
+#define STEPPER_PIN 14
 #define DIR_PIN 12
 #define AUTO_DISABLE_BUTTON_PIN 26
 #define OVERRIDE_CLOSE_BUTTON_PIN 27
@@ -18,25 +19,38 @@
 #define MS1_MICROSTEP_PIN 5
 #define MS2_MICROSTEP_PIN 4
 
-#define PIR_SENSOR_TIME_PERSISTENCE_MS 10000
+// Time that last high PIR sensor state will be persisted
+#define PIR_SENSOR_TIME_PERSISTENCE_MS 20000
 #define DEBOUNCE_TIME_MS 25
 
-// FOR HALF STEP MODE
-#define FAST_SPEED 1900  // steps/second
-// Slow speed of 300 is very noisy
-#define SLOW_SPEED 200  // steps/decond
-#define ACCEL 3200      // steps/second/second
-#define ESTOP_ACCEL 6000
-#define UNDERSHOOT_STEPS 200
+#define FAST_SPEED 800    // steps/second
+#define SLOW_SPEED 100    // steps/decond
+#define ACCEL 1750        // steps/second/second
+#define ESTOP_ACCEL 3000  // steps/second/second, applied when limit switch is hit
+// Number of steps before the limit switch position the motion profile first targett.
+// Roughly when this target is hit, speed drops to SLOW_SPEED
+#define UNDERSHOOT_STEPS 100
 
-#define HOMING_MAX_DISTANCE 20000  // steps
-#define HOMING_SPEED 400           // steps/second
+#define HOMING_MAX_DISTANCE 5000  // steps
+#define HOMING_SPEED 300          // steps/second
 
-#define INITIAL_HOMING_DIR -1
+#define INITIAL_HOMING_DIR 1
 
-#define LOGGING_ENABLED true
+#define LOGGING_ENABLED false
 
-enum class StepMode { HALF, QUARTER, EIGHTH, SIXTEENTH };
+// If true, swap the limit switches in code so the cmd state for
+// on_box_limit_switch actually corresponds to the off_box_limit_switch
+// and vice versa. This can be used if the limit switch stopper is used on the
+// opposite belt side of the curtain connection.
+#define SWAP_LIMIT_SWITCHES true
 
 // This defines the microstepping mode
-#define STEP_MODE StepMode::QUARTER
+enum class StepMode { HALF, QUARTER, EIGHTH, SIXTEENTH };
+#define STEP_MODE StepMode::HALF
+
+// Looking from basement towards curtain:
+// RIGHT_TO_LEFT: Left side curtain is fixed, open = curtain pulled to left, close = curtain pushed
+// to right LEFT_TO_RIGHT: Right side curtain is fixed, open = curtain pulled to right, close =
+// curtain pushed to left
+enum class OpenMode { LEFT_TO_RIGHT, RIGHT_TO_LEFT };
+#define OPEN_MODE OpenMode::LEFT_TO_RIGHT

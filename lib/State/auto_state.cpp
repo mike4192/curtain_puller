@@ -13,12 +13,31 @@ void Automatic::init() {
 bool Automatic::tick(const CommandData& command_data) {
   MotionCmd current_motion_cmd{MotionCmd::CLOSE};
 
+  if (command_data.ir_sensor_short_wire != prev_ir_sense_short) {
+    if (command_data.ir_sensor_short_wire) {
+      logIfEnabled("Short wire IR state changed true");
+    } else {
+      logIfEnabled("Short wire IR state changed false");
+    }
+  }
+
+  if (command_data.ir_sensor_long_wire != prev_ir_sense_long) {
+    if (command_data.ir_sensor_long_wire) {
+      logIfEnabled("Long wire IR state changed true");
+    } else {
+      logIfEnabled("Long wire IR state changed false");
+    }
+  }
+
+  prev_ir_sense_short = command_data.ir_sensor_short_wire;
+  prev_ir_sense_long = command_data.ir_sensor_long_wire;
+
   if (command_data.ir_sensor_short_wire || command_data.ir_sensor_long_wire) {
     current_motion_cmd = MotionCmd::OPEN;
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, LOW);
   } else {
-    current_motion_cmd = MotionCmd::OPEN;
+    current_motion_cmd = MotionCmd::CLOSE;
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, HIGH);
   }

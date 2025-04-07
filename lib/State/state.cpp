@@ -27,17 +27,33 @@ void State::process_motion_profile(MotionCmd open_close_cmd, MotionCmd prev_cmd,
 
   switch (motion_state_) {
     case MotionState::INIT:
+      if (check_at_destination(cmd_data, open_close_cmd)) {
+        logIfEnabled("In INIT state but already at destination so going to COMPLETE");
+        motion_state_ = MotionState::COMPLETE;
+        break;
+      }
+
       logIfEnabled("Motion Profile: In INIT, going to ACCELERATE");
       enable_driver();
       stepper_->setSpeedInStepsPerSecond(FAST_SPEED);
 
       {
         long target_pos{0L};
-        if (open_close_cmd == MotionCmd::OPEN) {
-          target_pos = open_pos_ + UNDERSHOOT_STEPS;
-        } else {
-          target_pos = close_pos_ - UNDERSHOOT_STEPS;
+
+        if (OPEN_MODE == OpenMode::LEFT_TO_RIGHT) {
+          if (open_close_cmd == MotionCmd::OPEN) {
+            target_pos = open_pos_ + UNDERSHOOT_STEPS;
+          } else {
+            target_pos = close_pos_ - UNDERSHOOT_STEPS;
+          }
+        } else {  // OPEN_MODE == OpenMode::RIGHT_TO_LEFT
+          if (open_close_cmd == MotionCmd::OPEN) {
+            target_pos = open_pos_ - UNDERSHOOT_STEPS;
+          } else {
+            target_pos = close_pos_ + UNDERSHOOT_STEPS;
+          }
         }
+
         stepper_->setTargetPositionInSteps(target_pos);
         logIfEnabled(("Motion Profile: In INIT, Curret pos: " +
                       String(stepper_->getCurrentPositionInSteps()) +
@@ -103,8 +119,7 @@ MotionState State::check_limit_switches(const MotionState motion_state, const Co
   // Passes through the inputted motion state, unless limit switches are hit, upon
   // which the ESTOP motion state is returned
 
-  if (((open_close_cmd == MotionCmd::OPEN) && cmd_data.on_box_limit_switch) ||
-      ((open_close_cmd == MotionCmd::CLOSE) && cmd_data.off_box_limit_switch)) {
+  if (check_at_destination(cmd_data, open_close_cmd)) {
     logIfEnabled(
         "Motion Profile: Limit switch hit. Setting estop accel and stopping cmd, going to ESTOP "
         "state.");
@@ -113,4 +128,19 @@ MotionState State::check_limit_switches(const MotionState motion_state, const Co
     return MotionState::ESTOP;
   }
   return motion_state;
+}
+
+bool State::check_at_destination(const CommandData cmd_data, MotionCmd open_close_cmd) {
+  // Check if position is already at destination
+  bool check_cond{false};
+
+  if (OPEN_MODE == OpenMode::LEFT_TO_RIGHT) {
+    check_cond = (((open_close_cmd == MotionCmd::OPEN) && cmd_data.off_box_limit_switch) ||
+                  ((open_close_cmd == MotionCmd::CLOSE) && cmd_data.on_box_limit_switch));
+  } else {  // OPEN_MODE == OpenMode::RIGHT_TO_LEFT
+    check_cond = (((open_close_cmd == MotionCmd::OPEN) && cmd_data.on_box_limit_switch) ||
+                  ((open_close_cmd == MotionCmd::CLOSE) && cmd_data.off_box_limit_switch));
+  }
+
+  return check_cond;
 }
