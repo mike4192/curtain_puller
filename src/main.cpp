@@ -100,11 +100,9 @@ void setup() {
   off_box_limit_switch.begin();
 
   // Setup pins for IR sensors explicitly as button library only
-  // supports initializing as pullup by default. We set it as INPUT_PULLUP
-  // as it doesn't really matter as the HC-SR501 based PIR sensor has a push-pull
-  // based output.
-  pinMode(IR_SENSOR_SHORT_WIRE_PIN, INPUT_PULLUP);
-  pinMode(IR_SENSOR_LONG_WIRE_PIN, INPUT_PULLUP);
+  // supports initializing as pullup by default.
+  pinMode(IR_SENSOR_SHORT_WIRE_PIN, INPUT_PULLDOWN);
+  pinMode(IR_SENSOR_LONG_WIRE_PIN, INPUT_PULLDOWN);
 
   // initialize LED pins as outputs
   pinMode(LED_BUILTIN, OUTPUT);
@@ -126,11 +124,28 @@ void setup() {
   set_microstepping_mode();
 }
 
+// int i = 0;
 // Loop forever
 void loop() {
   pollInputs();
 
   state_controller.tick(command_data);
+
+  // if (i == 100000) {
+  //   i =0;
+  //   if (digitalRead(IR_SENSOR_SHORT_WIRE_PIN) == HIGH) {
+  //     logIfEnabled("IR sensor short wire high");
+  //   } else {
+  //     logIfEnabled("IR sensor short wire low");
+  //   }
+  //   if (digitalRead(IR_SENSOR_LONG_WIRE_PIN) == HIGH) {
+  //     logIfEnabled("IR sensor long wire high");
+  //   } else {
+  //     logIfEnabled("IR sensor long wire low");
+  //   }
+  //   logIfEnabled("'''''''''''''");
+  // }
+  // i++;
 
   command_data.clearButtonStates();
 }

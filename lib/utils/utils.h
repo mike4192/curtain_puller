@@ -12,3 +12,5 @@ void logIfEnabled(const char* message);
 void disable_driver();
 
 void enable_driver();
+
+bool is_driver_enabled();
